@@ -35,5 +35,12 @@
     },
     "dependencies": {
         "@types/node": "^14.0.14"
-    }
+    },
+    "keywords": [
+        "defer",
+        "synchronise",
+        "synchronize",
+        "trigger",
+        "promise"
+    ]
 }
