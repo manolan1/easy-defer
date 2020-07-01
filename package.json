@@ -1,6 +1,6 @@
 {
     "name": "easy-defer",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A simple promise-based defer and synchronisation mechanism",
     "main": "./dist/Defer.js",
     "types": "./dist/Defer.d.ts",
