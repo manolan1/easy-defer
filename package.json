@@ -14,10 +14,7 @@
         "type": "git",
         "url": "git+https://github.com/manolan1/easy-defer.git"
     },
-    "author": {
-        "name": "Mark Nolan",
-        "email": "manolan@gmail.com"
-    },
+    "author": "Mark Nolan <manolan@gmail.com>",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/manolan1/easy-defer/issues"
