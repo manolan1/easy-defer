@@ -42,5 +42,8 @@
         "synchronize",
         "trigger",
         "promise"
-    ]
+    ],
+    "engines": {
+        "node": ">=12.0.0"
+    }
 }
