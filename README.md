@@ -1,4 +1,8 @@
 # easy-defer
+
+[![Build Status](https://travis-ci.org/manolan1/easy-defer.svg?branch=master)](https://travis-ci.org/manolan1/easy-defer)
+[![Dependency Status](https://david-dm.org/manolan1/easy-defer.svg)](https://david-dm.org/manolan1/easy-defer.svg)
+
 A simple promise-based defer and synchronisation mechanism
 
 The `Defer` class is basically a `Promise` that makes `resolve()`, `reject()` and the state available externally.
