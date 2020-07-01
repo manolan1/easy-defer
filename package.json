@@ -4,6 +4,9 @@
     "description": "A simple promise-based defer and synchronisation mechanism",
     "main": "./dist/Defer.js",
     "types": "./dist/Defer.d.ts",
+    "files": [
+        "/dist"
+    ],
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
         "test": "nyc --extension .ts --reporter=lcov --reporter=text-summary npm run test:unit",
