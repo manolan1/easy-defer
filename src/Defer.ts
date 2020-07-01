@@ -14,16 +14,52 @@ export default class Defer<T> implements Promise<T> {
     private resolver?: (value?: T | PromiseLike<T>) => void;
     private rejecter?: (reason?: any) => void;
 
-    // This is really rather unnecessary as they will always be defined, but it permits 
-    // both TS and ESLint to be happy at the same time, can't help the coverage impact!
+    /*
+     * This is a bit of a compromise due to limitations in Typescript's static checking.
+     *
+     * We "know" that resolver and rejecter will never be null. They are initialised in
+     * the constructor, but in such a way that Typescript cannot tell that definitively.
+     * 
+     * The choices are:
+     * - Use resolver and rejecter directly outside the class.
+     * 
+     *   This is the JS solution and would be absolutely fine if JS were the only language 
+     *   supported, but TS complains, so every usage needs an non-null assertion or an 
+     *   optional call.
+     * 
+     *   Instead, we create the function resolve and reject to expose them and hide the
+     *   handling of the "impossible" null scenario.
+     * 
+     * - Initialise the fields to empty functions or arrow functions, i.e. () => { }
+     * 
+     *   This resolves the optionality, but it introduces two issues. First, ESLint
+     *   complains with an Error that such functions are not allowed. Second, it impacts
+     *   the code coverage (for Functions) since those empty functions cannot be executed.
+     * 
+     * - Use optional call, i.e. this.resolver?.(value)
+     * 
+     *   This also resolves the optionality. ESLint is completely happy. However, the code
+     *   coverage is incorrect because this introduces two implied branches, which can never
+     *   be executed.
+     *
+     * - Assert that the fields are non-null.
+     * 
+     *   This is the chosen solution. It resolves the optionality and gives the correct code
+     *   coverage statistics. It requires an override to the default ESLint rules which warn 
+     *   against non-null assertions. But at least it is a warning rather than an Error (so
+     *   the rule authors have decided it is a lesser sin). 
+     */
+
     resolve(value?: T | PromiseLike<T>): void {
-        this.resolver?.(value);
+        /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+        this.resolver!(value);
     }
 
     // This is the actual Typescript declaration, so it requires any
     /* eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types */
     reject(reason?: any): void {
-        this.rejecter?.(reason);
+        /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+        this.rejecter!(reason);
     }
 
     then: <TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null) => Promise<TResult1 | TResult2>;
