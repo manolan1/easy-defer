@@ -107,7 +107,9 @@ d5.reject('d5 did not work');
 ```
 
 
-# Testing `EventEmitter`
+# Examples
+
+## Testing `EventEmitter`
 
 The original use case for `Defer` was testing an `EventEmitter` as a black box.
 
@@ -166,3 +168,60 @@ describe('SomeEmitter', () => {
 ```
 
 
+## Separate Arrange from Act
+
+Imagine the case where we have a download manager that implements some sort of throttling. We need to see whether it really throttles requests. There are a number of ways to approach this, but one way would be to use some `Defer` objects.
+
+Here, the use of `Defer` allows us to configure all the requests without worrying that one of them will complete before we are ready.
+
+```js
+    it('throttles downloads', async (done) => {
+        const d1 = new Defer();
+        const d2 = new Defer();
+
+        nock('https://test.com')
+            .get('/test1')
+            .reply(200, async (_uri, _requestBody) => {
+                await d1;           // this response will wait until we are ready
+                return RESPONSE;
+            });
+
+        nock('https://test.com')
+            .get('/test2')
+            .reply(200, async (_uri, _requestBody) => {
+                await d2;           // this response will wait until we are ready
+                return RESPONSE;
+            });
+
+        nock('https://test.com')
+            .get('/test3')
+            .reply(200, (_uri, _requestBody) => {
+                return RESPONSE;    // this response will not wait
+            });
+
+        const dm = new DownloadManager();
+        const p1 = dm.downloadUrl('https://test.com/test1');
+        const p2 = dm.downloadUrl('https://test.com/test2');
+        const p3 = dm.downloadUrl('https://test.com/test3')
+            .then(() => {
+                // expect to be called after d2 has completed, but d1 is still waiting
+                expect(d1.isPending).toBeTrue();
+                expect(d2.isFulfilled).toBeTrue();
+                 // resolve the last of them so all the downloads complete
+                d1.resolve();
+            });
+
+        // Once all the promises are complete, we'll end the test
+        Promise.all([p1, p2, p3])
+            .then(() => done());
+
+        // Guard conditions - everything is waiting
+        expect(d1.isPending).toBeTrue();
+        expect(d2.isPending).toBeTrue();
+
+        // Completing one request should allow the third request to be serviced
+        d2.resolve();
+    });
+```
+
+In this test, if the download for `p3` is not being throttled, it will start and finish immediately on declaration. The state of `d2` will not match what is expected.
