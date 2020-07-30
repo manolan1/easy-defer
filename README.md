@@ -1,7 +1,7 @@
 # easy-defer
 
 [![Build Status](https://travis-ci.org/manolan1/easy-defer.svg?branch=master)](https://travis-ci.org/manolan1/easy-defer)
-[![Dependency Status](https://david-dm.org/manolan1/easy-defer.svg)](https://david-dm.org/manolan1/easy-defer.svg)
+[![Dependency Status](https://david-dm.org/manolan1/easy-defer.svg)](https://david-dm.org/manolan1/easy-defer)
 [![Code Coverage](https://codecov.io/gh/manolan1/easy-defer/branch/master/graph/badge.svg)](https://codecov.io/gh/manolan1/easy-defer)
 
 A simple promise-based defer and synchronisation mechanism
